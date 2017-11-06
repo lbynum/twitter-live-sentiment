@@ -1,4 +1,4 @@
-# Sentiment Analysis and Topic Modeling with Spark Integration
+# Twitter Sentiment Analysis and Topic Modeling with Spark Integration
 
 Our project aims to perform high-level sentiment and topic analysis on Twitter data. 
 If successful, our work will allow us to gain insights about what topics are trending, 
