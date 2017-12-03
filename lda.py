@@ -2,17 +2,18 @@ from collections import defaultdict
 from pyspark import SparkContext
 from pyspark.mllib.linalg import Vector, Vectors
 from pyspark.mllib.clustering import LDA, LDAModel
-from pyspark.sql import SQLContext
+# from pyspark.sql import SQLContext
 import re
+import pandas as pd
 
 num_of_stop_words = 50  # Number of most common words to remove, trying to eliminate stop words
-num_topics = 3  # Number of topics we are looking for
+num_topics = 10  # Number of topics we are looking for
 num_words_per_topic = 10  # Number of words to display for each topic
 max_iterations = 35  # Max number of times to iterate before finishing
 
 # Initialize
 sc = SparkContext('local', 'PySPARK LDA Example')
-sql_context = SQLContext(sc)
+# sql_context = SQLContext(sc)
 
 # Process the corpus:
 # 1. Load each file as an individual document
@@ -22,7 +23,17 @@ sql_context = SQLContext(sc)
 # 5. Only keep the words that are all alphabetical characters
 # 6. Only keep words larger than 3 characters
 
-data = sc.wholeTextFiles('newsgroup/files/*').map(lambda x: x[1])
+# data = sc.wholeTextFiles('newsgroup/files/*').map(lambda x: x[1])
+
+path_to_data = 'result.txt'
+print('Reading data...')
+all_tweets_df = pd.read_table(path_to_data, names = ['ID', 'sentiment', 'tweet'])
+data = list(all_tweets_df['tweet'])
+data = sc.parallelize(data)
+
+# with open('testdata.txt', 'r') as test:
+#     data = test.readlines()
+#     data = sc.parallelize(data)
 
 tokens = data \
     .map(lambda document: document.strip().lower()) \
@@ -78,7 +89,7 @@ documents = tokens.zipWithIndex().map(document_vector).map(list)
 inv_voc = {value: key for (key, value) in vocabulary.items()}
 
 # Open an output file
-with open("output.txt", 'w') as f:
+with open("new_output.txt", 'w') as f:
     lda_model = LDA.train(documents, k=num_topics, maxIterations=max_iterations)
     topic_indices = lda_model.describeTopics(maxTermsPerTopic=num_words_per_topic)
 

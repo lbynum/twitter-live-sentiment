@@ -1,4 +1,5 @@
 import pandas as pd
+from sklearn import svm
 from sklearn.pipeline import Pipeline
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import classification_report
@@ -31,14 +32,11 @@ X_train, X_test, y_train, y_test = train_test_split(X,
                                                     shuffle=True)
 print('Training data dimensions n,d = {}'.format(X_train.shape))
 print('Test data dimensions n,d = {}'.format(X_test.shape))
-# define pipeline ##############################################################
-# tweet_cleaner = FunctionToTransformer(
-#     clean_tweet,
-#     lemmatize_tweet
-# )
+# define pipelines #############################################################
+################################################################################
 
-
-tfidf_classifier = Pipeline([
+# tfidf
+tfidf_MNB = Pipeline([
     ('vect', CountVectorizer(tokenizer=LemmaTokenizer(),
                              stop_words='english',
                              strip_accents='unicode',
@@ -46,8 +44,17 @@ tfidf_classifier = Pipeline([
     ('tfidf', TfidfTransformer()),
     ('clf', MultinomialNB())
 ])
+tfidf_SVM = Pipeline([
+    ('vect', CountVectorizer(tokenizer=LemmaTokenizer(),
+                             stop_words='english',
+                             strip_accents='unicode',
+                             max_df=0.5)),
+    ('tfidf', TfidfTransformer()),
+    ('clf', svm.SVC())
+])
 
-bow_classifier = Pipeline([
+# bow
+bow_MNB = Pipeline([
     ('vect', CountVectorizer(tokenizer=LemmaTokenizer(),
                              stop_words='english',
                              strip_accents='unicode',
@@ -55,18 +62,40 @@ bow_classifier = Pipeline([
     ('clf', MultinomialNB())
 ])
 
+
+# ngram
+twogram_MNB = Pipeline([
+    ('vect', CountVectorizer(tokenizer=LemmaTokenizer(),
+                             stop_words='english',
+                             strip_accents='unicode',
+                             ngram_range=(1,2),
+                             max_df=0.5)),
+    ('clf', MultinomialNB())
+])
+
+
+
+
 # run ##########################################################################
 print('Training TF-IDF Multinomial Naive Bayes...')
-tfidf_classifier.fit(X_train, y_train)
+tfidf_MNB.fit(X_train, y_train)
 print('Classifying TF-IDF Multinomial Naive Bayes...')
-y_prediction = tfidf_classifier.predict(X_test)
+y_prediction = tfidf_MNB.predict(X_test)
+print(y_prediction)
 report = classification_report(y_test, y_prediction)
 print(report)
 
 print('Training BOW Multinomial Naive Bayes...')
-bow_classifier.fit(X_train, y_train)
+bow_MNB.fit(X_train, y_train)
 print('Classifying BOW Multinomial Naive Bayes...')
-y_prediction = bow_classifier.predict(X_test)
+y_prediction = bow_MNB.predict(X_test)
+report = classification_report(y_test, y_prediction)
+print(report)
+
+print('Training 2-gram Multinomial Naive Bayes...')
+twogram_MNB.fit(X_train, y_train)
+print('Classifying 2-gram Multinomial Naive Bayes...')
+y_prediction = twogram_MNB.predict(X_test)
 report = classification_report(y_test, y_prediction)
 print(report)
 
