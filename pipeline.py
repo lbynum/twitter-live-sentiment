@@ -1,3 +1,5 @@
+import pickle
+
 import pandas as pd
 from sklearn import svm
 from sklearn.pipeline import Pipeline
@@ -96,6 +98,7 @@ print('Training 2-gram Multinomial Naive Bayes...')
 twogram_MNB.fit(X_train, y_train)
 print('Classifying 2-gram Multinomial Naive Bayes...')
 y_prediction = twogram_MNB.predict(X_test)
+pickle.dump(twogram_MNB, open('twogram_MNB', 'wb'))
 report = classification_report(y_test, y_prediction)
 print(report)
 

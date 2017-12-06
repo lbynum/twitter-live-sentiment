@@ -7,7 +7,7 @@ import re
 import pandas as pd
 
 num_of_stop_words = 50  # Number of most common words to remove, trying to eliminate stop words
-num_topics = 10  # Number of topics we are looking for
+num_topics = 2  # Number of topics we are looking for
 num_words_per_topic = 10  # Number of words to display for each topic
 max_iterations = 35  # Max number of times to iterate before finishing
 
